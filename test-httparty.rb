@@ -4,8 +4,6 @@ class TestParty
   include HTTParty
   base_uri 'http://localhost:5000'
 end
-#global variable
-$id
 
 RSpec.describe 'API TEST - POST' do
   it 'Should not create a contact without name' do
@@ -47,11 +45,9 @@ RSpec.describe 'API TEST - POST' do
 end
 
 RSpec.describe 'API TEST - GET' do
-
   it 'Should return a contact' do
     begin
       response = TestParty.get('/contacts?name=FREDRUBY')
-      id = response[0]['_id']
       expect(response.code).to eql(200)
       expect(response[0]['name']).to eql('FREDRUBY')
       expect(response[0]['mobilephone']).to eql('5531986116979')
@@ -61,23 +57,38 @@ RSpec.describe 'API TEST - GET' do
 
   it 'Should return httpStatus 404 not found' do
     begin
-      response = TestParty.get('/contacts?name=FRED')
+      response = TestParty.get('/contacts?name=NAOEXISTE')
       expect(response.code).to eql(404)
       expect(response.body).to eql('Not Found')
     end
   end
 end
 
-# RSpec.describe 'API TEST - PUT' do
-#   it 'Should update a contact' do
-#     newContact = {
-#       'name' => 'FRED',
-#       'mobilephone' => '55319999999999',
-#       'homephone' => '553133334444'
-#     }
-#     begin
-#       response = TestParty.put('/contacts/' + id.to_s, body: newContact)
-#       expect(response.code).to eql(204)
-#     end
-#   end
-# end
+RSpec.describe 'API TEST - PUT' do
+  it 'Should update a contact' do
+    newContact = {
+      'name' => 'FRED',
+      'mobilephone' => '55319999999999',
+      'homephone' => '553133334444'
+    }
+    begin
+      response = TestParty.put('/contacts/56d5efa8c82593800291c02b', body: newContact)
+      expect(response.code).to eql(204)
+    end
+  end
+end
+
+RSpec.describe 'API TEST - DELETE' do
+  it 'Should delete a contact' do
+    begin
+      response = TestParty.delete('/contacts/56d5efa8c82593800291c02b')
+      expect(response.code).to eql(204)
+    end
+  end
+  it 'Should not delete a contact' do
+    begin
+      response = TestParty.delete('/contacts/56d5efa8c82593800291c11a')
+      expect(response.code).to eql(404)
+    end
+  end
+end
